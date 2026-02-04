@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-def clean_ml_files(source_dir='data\Files for ML\Files for ML', target_dir='data/file_cleaned'):
+def clean_ml_files(source_dir='data\Files for ML', target_dir='data/file_cleaned'):
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
         print(f"Cartella creata: {target_dir}")
