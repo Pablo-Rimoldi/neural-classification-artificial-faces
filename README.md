@@ -31,7 +31,7 @@ Focus on the **200-600 ms** time window and specific electrodes:
 ## Quick Start
 1. **clone  repository**
 ```bash
-   git clone [https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces](https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces)
+   git clone https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces
    cd neural-classification-artificial-faces
    ```
 
