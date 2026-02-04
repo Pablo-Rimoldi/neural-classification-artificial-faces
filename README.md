@@ -26,3 +26,21 @@ We aim to classify EEG trials into 4 categories:
 ### Key Features
 Focus on the **200-600 ms** time window and specific electrodes:
 `O1, O2, PO9, PO10, TP7, TP8, P3, P4, AF3, AF4, AFF1h, AFF2h, AFF3h, AFF4h`.
+
+
+## Quick Start
+1. **clone  repository**
+   \`\`\`bash
+   git clone (https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces)
+   \`\`\`
+
+
+2. **Install dependencies**:
+   \`\`\`bash
+   pip install pandas
+   \`\`\`
+
+2. **Run cleaning**:
+   \`\`\`bash
+   python src/data_cleaner.py
+   \`\`\`
