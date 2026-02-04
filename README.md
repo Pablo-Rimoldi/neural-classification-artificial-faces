@@ -36,9 +36,9 @@ Focus on the **200-600 ms** time window and specific electrodes:
 
 
 2. **Install dependencies**:
-   \`\`\`bash
+   '''bash
    pip install pandas
-   \`\`\`
+   '''
 
 2. **Run cleaning**:
    \`\`\`bash
