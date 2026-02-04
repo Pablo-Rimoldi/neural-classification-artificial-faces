@@ -1,7 +1,4 @@
 # Seeing the Uncanny: Neural Classification of Artificial Faces
-Neural classification of real vs. GAN-generated hyper-realistic faces using EEG ERP signals. Collaborative project for the Bachelor of AI (UNIPV/UNIMIB).
-----------------------------------------------------------------
-
 ## Project Overview
 This project investigates the neural representation of AI-generated hyper-realistic faces compared to real human faces. Despite behavioral difficulty in distinguishing them, our goal is to use Machine Learning and Deep Learning to classify brain responses (ERP) recorded via EEG.
 
