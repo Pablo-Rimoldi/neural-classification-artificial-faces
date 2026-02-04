@@ -30,17 +30,19 @@ Focus on the **200-600 ms** time window and specific electrodes:
 
 ## Quick Start
 1. **clone  repository**
-   \`\`\`bash
-   git clone (https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces)
-   \`\`\`
-
+```bash
+   git clone [https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces](https://github.com/Pablo-Rimoldi/neural-classification-artificial-faces)
+   cd neural-classification-artificial-faces
+   ```
 
 2. **Install dependencies**:
-   '''bash
-   pip install pandas
-   '''
+```bash
+    pip install -r requirements.txt
+   ```
 
-2. **Run cleaning**:
-   \`\`\`bash
-   python src/data_cleaner.py
-   \`\`\`
+3. **Run cleaning**:
+```bash
+    python src/data_cleaner.py
+   ```
+
+
