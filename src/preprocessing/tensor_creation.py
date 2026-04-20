@@ -69,7 +69,7 @@ def create_lists(data):
     target_epoch_samples = 205
 
     # Group by epochs
-    for (sub_id, trig), group in data.groupby(['SubjectID', 'Trigger']):
+    for (sub_id, trig), group in data.groupby(['SubjectID', 'TargetCODE']):
         # Order by the time dimension
         group = group.sort_values('Time_ms')
 
@@ -108,6 +108,7 @@ def create_lists(data):
             y_list.append(group['TargetCODE'].iloc[0])
             sub_list.append(sub_id)
             subject_sex_list.append(group['SubjectSEX'].iloc[0])
+        
     return EEG_list, PCA_list, y_list, sub_list, subject_sex_list
 
 # ─────────────────────────────────────────────
@@ -120,112 +121,25 @@ def create_tensor(data):
     y_final = None
     subjects_final = None
 
-    AF_data = data[data['TargetCODE'] == '60AF']
-    AM_data = data[data['TargetCODE'] == '50AM']
-    RF_data = data[data['TargetCODE'] == '80RF']
-    RM_data = data[data['TargetCODE'] == '70RM']
+    combined_X_list = []
 
-    for i, current_data_df in enumerate([AF_data, AM_data, RF_data, RM_data]):
-        combined_x_list_current = []
-        EEG_list_current, PCA_list_current, y_list_current, sub_list_current, subject_sex_list_current = create_lists(current_data_df)
+    EEG_list, PCA_list, y_list, sub_list, subject_sex_list = create_lists(data)
 
-        for j in range(len(EEG_list_current)):
-            # Create a new channel filled with the SubjectSEX value, repeated for the time dimension
-            subject_sex_value = subject_sex_list_current[j]
-            sex_channel_data = np.full((1, EEG_list_current[j].shape[1]), subject_sex_value)
-            # Vertically stack the EEG channels and PCA components for each epoch
-            # Resulting shape for each epoch will be (14 EEG_channels + 4 PCA_channels + 1 sex_channel, Time)
-            combined_epoch_data = np.vstack((EEG_list_current[j], PCA_list_current[j], sex_channel_data))
-            combined_x_list_current.append(combined_epoch_data)
+    for j in range(len(EEG_list)):
+        # Vertically stack the EEG channels and PCA components for each epoch
+        # Resulting shape for each epoch will be (14 EEG_channels + 4 PCA_channels, Time)
+        # Add an extra channel to track the subject sex
+        subject_sex_value = subject_sex_list[j]
+        # Create a new channel filled with the SubjectSEX value, repeated for the time dimension
+        new_channel_data = np.full((1, EEG_list[j].shape[1]), subject_sex_value)
+        combined_epoch_data = np.vstack((EEG_list[j], PCA_list[j], new_channel_data))
+        combined_X_list.append(combined_epoch_data)
 
-        x_current = np.array(combined_x_list_current) # 3D Tensor (Epochs, Channels, Time)
-        y_current = np.array(y_list_current) # Labels
-        subjects_current = np.array(sub_list_current) # Subject ID
+    x_final = np.array(combined_X_list) # 3D Tensor (Epochs, Channels, Time)
+    y_final = np.array(y_list) # Labels
+    subjects_final = np.array(sub_list) # Subject ID
 
-        if x_final is None:
-            x_final = x_current
-            y_final = y_current
-            subjects_final = subjects_current
-        else:
-            x_final = np.concatenate((x_final, x_current), axis=0)
-            y_final = np.concatenate((y_final, y_current), axis=0)
-            subjects_final = np.concatenate((subjects_final, subjects_current), axis=0)
-
-    return x_final, y_final, subjects_final
-
-# ─────────────────────────────────────────────
-# CHECK CLEANING
-# Plots the original and cleaned data for a sample epoch to visually verify the effect of temporal cleaning.
-# ─────────────────────────────────────────────
-
-def check_cleaning(data, cols):
-    # Check the effect of temporal cleaning by plotting the original and cleaned data for a single epoch
-    # Get a sample epoch to demonstrate cleaning
-    sample_group = None
-    for (sub_id, trig), group in data.groupby(['SubjectID', 'Trigger']):
-        sample_group = group.sort_values('Time_ms')
-        break # Take the first epoch
-
-    if sample_group is not None:
-        # Extract raw values for the sample epoch
-        raw_values_sample = sample_group[cols].values
-        
-        # Define times based on the length of this specific epoch
-        # Use the actual time values from the epoch if available, otherwise create a linspace
-        if 'Time_ms' in sample_group.columns and len(sample_group['Time_ms']) == raw_values_sample.shape[0]:
-            times = sample_group['Time_ms'].values
-        else:
-            times = np.linspace(200, 200 + (raw_values_sample.shape[0] / S_FREQ) * 1000, raw_values_sample.shape[0])
-
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
-
-        # Plot original data for the selected epoch
-        for i in range(raw_values_sample.shape[1]):
-            ax1.plot(times, raw_values_sample[:, i], color='blue', alpha=0.3)
-        ax1.set_title("Original channels (sample epoch)")
-        ax1.invert_yaxis()
-
-        # Plot cleaned data for the selected epoch
-        cleaned_data_sample = apply_temporal_cleaning(raw_values_sample)
-        for i in range(cleaned_data_sample.shape[1]):
-            ax2.plot(times, cleaned_data_sample[:, i], color='red', alpha=0.3)
-        ax2.set_title("Cleaned channels (sample epoch)")
-        ax2.invert_yaxis()
-
-        plt.show()
-    else:
-        print("No valid epoch found to plot.")
-
-# ─────────────────────────────────────────────
-# CHECK EEG-PCA RELATION
-# Plots the average of all epochs for a specific class to visually verify the relationship between cleaned EEG channels and PCA components.
-# ─────────────────────────────────────────────
-
-def check_EEG_PCA_relation(x, y):
-    # Mean standard deviation for EEG and for PCA (to check if the cleaning worked and reduced the noise in the data)
-    print("Mean STD EEG:", np.std(x[:, :14, :]))
-    print("Mean STD PCA:", np.std(x[:, 14:18, :]))
-
-    # Check the cleaned data by plotting the average of all epochs for a specific class (e.g., TargetNATURE='70RM'))
-    times = np.linspace(200, 600, x.shape[2])
-    avg_all = np.mean(x[y == '70RM'], axis=0)
-
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
-
-    # Plot EEG
-    for i in range(14):
-        ax1.plot(times, avg_all[i, :], color='blue', alpha=0.3)
-    ax1.set_title("Cleaned EEG channels")
-    ax1.invert_yaxis()
-
-    # Plot PCA
-    colors = ['red', 'green', 'orange', 'purple']
-    for i in range(4):
-        ax2.plot(times, avg_all[14+i, :], color=colors[i], label=f'PCA {i+1}', linewidth=2)
-    ax2.set_title("Cleaned PCA components")
-    ax2.invert_yaxis()
-
-    plt.show()
+    return x_final, y_final, subject_final
 
 # ─────────────────────────────────────────────
 # CHECK FINAL TENSOR
@@ -252,13 +166,6 @@ def main():
 
     # Create tensor
     x, y, subjects = create_tensor(preprocessed_data)
-
-    # Check cleaning effect
-    check_cleaning(preprocessed_data, EEG_CHANNELS) # Check cleaning on EEG channels
-    check_cleaning(preprocessed_data, PCA_COLUMNS) # Check cleaning on PCA components
-
-    # Check EEG-PCA relation
-    check_EEG_PCA_relation(x, y)
 
     # Check the final tensor
     check_final_tensor(x, y)
