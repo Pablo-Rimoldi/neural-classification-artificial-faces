@@ -1,0 +1,72 @@
+{
+    "experiment": "dl_test_byclass — GroupKFold Binary (AI vs Human)",
+    "date": "2026-04-20",
+    "seed": 42,
+    "n_folds": 5,
+    "n_samples": 100,
+    "n_subjects": 26,
+    "optuna_trials_per_model": 500,
+
+    "GNN_TemporalGraphNet": {
+        "best_kfold_accuracy": 0.7823,
+        "reconstructed_kfold_accuracy": "74.0% ± 3.7%",
+        "fold_details": ["70%", "70%", "77%", "79%", "74%"],
+        "optimization_time_minutes": 178.4,
+        "best_params": {
+            "temp_filters": 128,
+            "kernel_size": 8,
+            "dropout_rate": 0.5501953575881903,
+            "lr": 0.0019992545762918643,
+            "weight_decay": 1.387178946718914e-06,
+            "epochs": 100
+        },
+        "gender_bias": {
+            "male_accuracy": 0.755,
+            "female_accuracy": 0.725,
+            "delta": 0.030
+        }
+    },
+
+    "CNN_Res1DCNN": {
+        "best_kfold_accuracy": 0.7518,
+        "reconstructed_kfold_accuracy": "66.9% ± 4.6%",
+        "fold_details": ["60%", "70%", "73%", "68%", "63%"],
+        "optimization_time_minutes": 149.9,
+        "best_params": {
+            "filters1": 16,
+            "filters2": 32,
+            "kernel_size": 11,
+            "dropout_rate": 0.5279374862291788,
+            "lr": 0.00430371575215255,
+            "weight_decay": 0.00893854241747778,
+            "epochs": 100
+        },
+        "gender_bias": {
+            "male_accuracy": 0.633,
+            "female_accuracy": 0.706,
+            "delta": 0.073
+        }
+    },
+
+    "RNN_MemoryLSTM": {
+        "best_kfold_accuracy": 0.7527,
+        "reconstructed_kfold_accuracy": "69.3% ± 6.0%",
+        "fold_details": ["65%", "65%", "64%", "74%", "79%"],
+        "optimization_time_minutes": 487.0,
+        "best_params": {
+            "hidden_size": 128,
+            "num_layers": 2,
+            "dropout_rate": 0.5318471492489857,
+            "lr": 0.0006198695937547627,
+            "weight_decay": 1.1222992862752207e-06,
+            "epochs": 100
+        },
+        "gender_bias": {
+            "male_accuracy": 0.714,
+            "female_accuracy": 0.667,
+            "delta": 0.048
+        }
+    },
+
+    "total_optimization_time_hours": 13.6
+}
