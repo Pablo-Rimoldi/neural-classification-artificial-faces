@@ -1,7 +1,13 @@
 numpy
+pandas
+scipy
+scikit-learn
+xgboost
 torch
 optuna
-scikit-learn
+cmaes
 matplotlib
 seaborn
+pyarrow
 jupyter
+pytest
