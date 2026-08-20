@@ -31,10 +31,10 @@ def test_build_and_roundtrip_tensor(tmp_path):
     from src.preprocessing.tensor import build_tensor, save_tensor, load_tensor
     eeg = [np.zeros((14, 205)), np.ones((14, 205))]
     pca = [np.zeros((4, 205)),  np.ones((4, 205))]
-    X, y, subj = build_tensor(eeg, pca, ['50AM', '70RM'], ['01', '02'], ['F', 'M'])
+    X, y, subj = build_tensor(eeg, pca, ['50AM', '60AF'], ['01', '02'], ['F', 'M'])
     assert X.shape == (2, 19, 205) and X.dtype == np.float64
-    assert (X[0, 18, :] == 1.0).all()      # subject 0 is 'F' -> sex row = 1.0
-    assert (X[1, 18, :] == 0.0).all()      # subject 1 is 'M' -> sex row = 0.0
+    assert (X[0, 18, :] == 0.0).all()      # '50AM' is Male face -> FaceSEX row = 0.0
+    assert (X[1, 18, :] == 1.0).all()      # '60AF' is Female face -> FaceSEX row = 1.0
     p = tmp_path / 'final_tensor.npz'
     save_tensor(X, y, subj, p)
     X2, y2, s2 = load_tensor(p)

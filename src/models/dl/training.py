@@ -194,6 +194,11 @@ def run_dl_nested_cv(
     if device is None:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+    # Mirror the notebook's global determinism setup (cell 66): on CUDA, force
+    # deterministic cuDNN kernels. No-op on CPU.
+    if device.type == 'cuda':
+        torch.backends.cudnn.deterministic = True
+
     X_norm, y, subjects = data['X_norm'], data['y'], data['subjects']
 
     reset_all_seeds(seed)

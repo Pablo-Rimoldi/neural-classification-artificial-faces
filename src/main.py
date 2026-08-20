@@ -108,7 +108,10 @@ def run_pipeline(
     results, pooled = run_nested_cv(models, ml_data, quick_test=quick_test, verbose=True)
     best_name = select_best(results)
 
-    stage2 = run_stage2(best_name, models, ml_data, quick_test=quick_test, verbose=True)
+    stage2 = run_stage2(
+        best_name, models, ml_data,
+        quick_test=quick_test, verbose=True, stage1_results=results,
+    )
 
     if make_plots:
         order = sorted(results, key=lambda n: -np.nanmean(results[n]['acc']))

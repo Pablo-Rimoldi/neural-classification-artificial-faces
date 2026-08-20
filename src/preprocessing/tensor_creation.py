@@ -128,10 +128,9 @@ def create_tensor(data):
     for j in range(len(EEG_list)):
         # Vertically stack the EEG channels and PCA components for each epoch
         # Resulting shape for each epoch will be (14 EEG_channels + 4 PCA_channels, Time)
-        # Add an extra channel to track the subject sex
-        subject_sex_value = subject_sex_list[j]
-        # Create a new channel filled with the SubjectSEX value, repeated for the time dimension
-        new_channel_data = np.full((1, EEG_list[j].shape[1]), subject_sex_value)
+        # Add an extra channel to track the face sex (FaceSEX: 1.0 for female face, 0.0 for male face)
+        face_sex_val = 1.0 if str(y_list[j]).endswith('F') else 0.0
+        new_channel_data = np.full((1, EEG_list[j].shape[1]), face_sex_val)
         combined_epoch_data = np.vstack((EEG_list[j], PCA_list[j], new_channel_data))
         combined_X_list.append(combined_epoch_data)
 

@@ -233,12 +233,12 @@ def run_encoding_decoding(X, y_codes, subjects, *, make_plot=True, save_path=Non
         print("\n" + "=" * 55)
         print("SUMMARY")
         print("=" * 55)
-        print(f"  Data shape           : {X_final.shape}  [Epochs x Channels x Time]")
+        print(f"  Data shape           : {tuple(X_final.shape)}  [Epochs x Channels x Time]")
         print(f"  Good channels        : {n_good}/{n_channels}")
         print(f"  Time window          : {TIME_WIN_START}-{TIME_WIN_END} ms  "
               f"({n_times} timepoints,  {ms_per_tp:.2f} ms/tp)")
-        print(f"  Classes              : {list(unique_labels)}")
-        print(f"  Encoding weights K   : {K.shape}  [Classes x Channels x Time]")
+        print(f"  Classes              : {[str(lbl) for lbl in unique_labels]}")
+        print(f"  Encoding weights K   : {tuple(K.shape)}  [Classes x Channels x Time]")
         print(f"  Best alpha (Ridge)   : {ridge.alpha_:.1f}")
         print(f"  Best ANOVA ch        : ch={np.argmax(f_map.max(axis=1))}  "
               f"peak F={f_map.max():.2f}")
