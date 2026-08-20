@@ -47,7 +47,7 @@ K_CANDIDATES = [5, 10, 15, 'all']
 SCALER_CHOICES = ['passthrough', MinMaxScaler(), RobustScaler()]
 
 # --- DL pipeline -------------------------------------------------------------
-DL_SEED = 3407
+DL_SEED = 4204
 
 # --- Label maps (verbatim) ---------------------------------------------------
 # Condition codes -> binary class: {'50AM', '60AF'} -> 0 (AI), {'70RM', '80RF'} -> 1 (Real).
