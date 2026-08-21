@@ -34,11 +34,11 @@ from src.models.dl.dataset import EEGDataset
 # (the commented-out block in that cell is an older, unused variant and is
 # intentionally not reproduced here).
 DEFAULT_FOLD_HPS = [
-    {'temp_filters': 128, 'kernel_size': 4, 'n_layers': 1, 'adj_init': 'uniform', 'adj_norm': 'softmax', 'dropout': 0.5875714865184984, 'lr': 0.00039944574656028425, 'wd': 9.3329893849496e-05, 'scheduler': 'step', 'batch_size': 16, 'epochs': 100, 'mixup_alpha': 0.12437494608574283},
-    {'temp_filters': 128, 'kernel_size': 16, 'n_layers': 2, 'adj_init': 'random', 'adj_norm': 'sigmoid', 'dropout': 0.1931252250248428, 'lr': 0.00029249481849777224, 'wd': 0.00193796076277827, 'scheduler': 'none', 'batch_size': 8, 'epochs': 80, 'mixup_alpha': 0.1562916113503165},
-    {'temp_filters': 64, 'kernel_size': 4, 'n_layers': 1, 'adj_init': 'uniform', 'adj_norm': 'sigmoid', 'dropout': 0.414347718713756, 'lr': 0.0008344540631504169, 'wd': 1.248983925829189e-05, 'scheduler': 'none', 'batch_size': 16, 'epochs': 120, 'mixup_alpha': 0.35237380732260076},
-    {'temp_filters': 128, 'kernel_size': 4, 'n_layers': 1, 'adj_init': 'uniform', 'adj_norm': 'softmax', 'dropout': 0.3576234092040268, 'lr': 0.0024085114381778554, 'wd': 6.0016969669930806e-05, 'scheduler': 'step', 'batch_size': 8, 'epochs': 80, 'mixup_alpha': 0.16240200839794475},
-    {'temp_filters': 128, 'kernel_size': 4, 'n_layers': 2, 'adj_init': 'random', 'adj_norm': 'sigmoid', 'dropout': 0.634267783778097, 'lr': 0.001336989948210231, 'wd': 1.7874482694064222e-05, 'scheduler': 'step', 'batch_size': 8, 'epochs': 80, 'mixup_alpha': 0.19622602414996604},
+    {'temp_filters': 16, 'kernel_size': 8, 'n_layers': 1, 'adj_init': 'random', 'adj_norm': 'none', 'dropout': 0.5046571918190736, 'lr': 0.000635896422246323, 'wd': 3.0044116686639446e-06, 'scheduler': 'step', 'batch_size': 32, 'epochs': 120, 'mixup_alpha': 0.3394635362586372},
+    {'temp_filters': 64, 'kernel_size': 4, 'n_layers': 2, 'adj_init': 'uniform', 'adj_norm': 'sigmoid', 'dropout': 0.574093238462129, 'lr': 0.0010808703136853898, 'wd': 0.0016946249349555115, 'scheduler': 'step', 'batch_size': 32, 'epochs': 60, 'mixup_alpha': 0.36393300724250593},
+    {'temp_filters': 128, 'kernel_size': 32, 'n_layers': 1, 'adj_init': 'uniform', 'adj_norm': 'none', 'dropout': 0.43072365380252486, 'lr': 0.00010052406565475403, 'wd': 7.67457142739357e-06, 'scheduler': 'step', 'batch_size': 32, 'epochs': 80, 'mixup_alpha': 0.35229211045320113},
+    {'temp_filters': 32, 'kernel_size': 8, 'n_layers': 2, 'adj_init': 'random', 'adj_norm': 'softmax', 'dropout': 0.5262496137701614, 'lr': 0.003248987393210566, 'wd': 3.2919129849906944e-05, 'scheduler': 'cosine', 'batch_size': 32, 'epochs': 60, 'mixup_alpha': 0.2448754074193164},
+    {'temp_filters': 32, 'kernel_size': 4, 'n_layers': 2, 'adj_init': 'uniform', 'adj_norm': 'sigmoid', 'dropout': 0.3422047446607334, 'lr': 0.0007310057721514055, 'wd': 0.00026089115991403613, 'scheduler': 'cosine', 'batch_size': 16, 'epochs': 120, 'mixup_alpha': 0.3490575859172018},
 ]
 
 
