@@ -22,12 +22,12 @@ PCA_COLUMNS = ['PCA_Frontal', 'PCA_Parietal', 'PCA_Occipital', 'PCA_Temporal']
 # ─────────────────────────────────────────────
 
 def load_files(
-    folder_path: str = 'data/Files for ML',
+    folder_path: str = 'data/file_raw',
     sfreq: int = 512,
     trigger_row: int = 75,
 ) -> pd.DataFrame:
     files = glob.glob(os.path.join(folder_path, '*.txt'))
-    print(f"Founded {len(files)} files")
+    print(f"Found {len(files)} files")
 
     step_ms = 1000 / sfreq
 
@@ -199,7 +199,7 @@ def plot_subject(dataset: pd.DataFrame, subject_id: str = '01') -> None:
 # ─────────────────────────────────────────────
 
 def main(
-    input_folder: str = 'data/Files for ML',
+    input_folder: str = 'data/file_raw',
     output_path: str = 'data/dataset_eeg_preprocessed.parquet',
 ) -> pd.DataFrame:
     dataset = load_files(input_folder)
