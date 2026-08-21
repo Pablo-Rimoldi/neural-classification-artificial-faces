@@ -168,6 +168,59 @@ python -m pytest -m "not slow" -q
 python -m pytest -q
 ```
 
+## Key Experimental Results
+
+The findings below reflect the full, executed benchmark from `notebooks/Neural_classification_artificial_faces.ipynb`:
+
+### 1. Mass-Univariate Encoding & Linear Decoding (220–500 ms)
+- **Ridge Encoding:** Best $\alpha = 100.0$, training $R^2 = 0.0052$, best cross-validated channel $R^2 = -0.0155$ (channel 17).
+- **ANOVA Sensitivity Map:** Diffuse, peak $F = 8.57$ at channel 8 (AF3).
+- **Signal Detection Theory (SDT) AUC:** Uniformly $\sim 0.500$ across individual channels.
+- **Group-Aware Logistic Decoding:** Reached **$0.623 \pm 0.106$** accuracy across 5 folds (chance = 0.50), indicating that the AI-vs-real signal is distributed across multivariate patterns rather than localized in a single channel or timepoint.
+
+### 2. Classical Machine Learning Benchmark (100 Trials, 25 Subjects)
+Repeated group-aware nested cross-validation ($5 \times 5$ `StratifiedGroupKFold`, 25 outer estimates; inner `GroupShuffleSplit` with 5 splits and 20% holdout; intra-subject z-score $\to$ `SelectKBest` ANOVA-F $\to$ classifier):
+
+| Model | Accuracy (mean & variance) | Macro-F1 (mean & variance) | ROC-AUC (mean & variance) |
+|---|---|---|---|
+| **LDA** | **0.700 (var 0.0048)** | **0.698 (var 0.0048)** | **0.783 (var 0.0090)** |
+| LinearSVC_Cal | 0.700 (var 0.0062) | 0.698 (var 0.0064) | 0.778 (var 0.0098) |
+| LinearSVC | 0.696 (var 0.0070) | 0.695 (var 0.0070) | 0.778 (var 0.0107) |
+| LogReg_EN | 0.696 (var 0.0054) | 0.694 (var 0.0055) | 0.777 (var 0.0097) |
+| LogReg_L1 | 0.694 (var 0.0075) | 0.692 (var 0.0076) | 0.778 (var 0.0121) |
+| SGD | 0.688 (var 0.0099) | 0.678 (var 0.0126) | 0.778 (var 0.0131) |
+| XGBoost | 0.678 (var 0.0092) | 0.673 (var 0.0101) | 0.774 (var 0.0122) |
+| Dummy | 0.500 (var 0.0000) | 0.333 (var 0.0000) | 0.500 (var 0.0000) |
+
+- **Stage 2 Focused Search on LDA ($n=80$ iterations):** Improved accuracy to **$0.720\ (\text{var } 0.0062)$**, macro-F1 to **$0.718$**, and ROC-AUC to **$0.780$** (**Adopted**).
+  - *Most frequent hyperparameters across 25 folds:* `clf__shrinkage=0.05` (9/25), `clf__solver='lsqr'` (15/25), `scaler=RobustScaler()` (10/25), `selector__k=10` (15/25).
+- **Permutation Test vs. Chance ($n=1000$ trial-level shuffles):**
+  - Observed Accuracy: **$0.750$** vs. null mean $0.491\ (\text{var } 0.0038)$, **$p = 0.0010$** (chance = 0.50).
+  - Observed MCC: **$+0.500$** vs. null mean $-0.018\ (\text{var } 0.0151)$, **$p = 0.0010$** $\implies$ **decoding statistically robust above chance**.
+- **Wilcoxon Signed-Rank Tests (25 folds, Bonferroni-corrected):**
+  - LDA significantly outperforms Dummy ($p_{\text{Bonf}} = 0.0001$).
+  - Pairwise differences against competing linear models (LinearSVC_Cal $p_{\text{raw}}=0.0845$, LinearSVC $p_{\text{raw}}=0.0523$, LogReg_EN $p_{\text{raw}}=0.0557$, LogReg_L1 $p_{\text{raw}}=0.0394$, SGD $p_{\text{raw}}=0.0494$, XGBoost $p_{\text{raw}}=0.0318$) are non-significant after Bonferroni correction.
+
+### 3. Deep Learning: SpatialTemporalCNN (103 Epochs, 5-Fold GroupKFold)
+- **Architecture:** Learned $19 \times 19$ spatial mixing matrix $\to$ Conv1d temporal filters $\to$ Batch Normalization $\to$ ELU $\to$ optional residual layer $\to$ Adaptive Average Pooling ($T=8$) $\to$ Dropout $\to$ Linear logits (tuned via Optuna CMA-ES with 150 inner trials/fold).
+- **Generalization Performance:**
+  - Per-fold accuracies: `65.2%`, `60.0%`, `55.0%`, `70.0%`, `70.0%` (Per-fold: `['65%', '60%', '55%', '70%', '70%']`).
+  - Per-fold AUCs: `0.652`, `0.570`, `0.750`, `0.680`, `0.700`.
+  - **Mean Accuracy: $64.0\% \pm 5.8\%$**, **Mean AUC: $0.670$**.
+  - **Binomial Test vs. Chance (50%):** **66/103 correct held-out predictions**, **$p = 0.0028$** (**statistically significant**, $p < 0.05$).
+  - **Balanced Classification Report:**
+    - AI ($50/60$): Precision = $0.63$, Recall = $0.65$, F1 = $0.64$ (support = 51)
+    - Real ($70/80$): Precision = $0.65$, Recall = $0.63$, F1 = $0.64$ (support = 52)
+    - Macro Avg F1 = $0.64$, Weighted Avg F1 = $0.64$.
+
+### 4. Explainable AI (XAI) & Spatiotemporal Dynamics
+- **Spatial Localization ("Where"):** Permutation importance ($N=20$ shuffles on held-out test sets across 5 folds) isolates **AF4, PO10, O2, TP8, and PCA_Parietal** as the primary discriminative features (a prominent right-lateralized posterior occipito-parietal cluster with frontal contribution).
+- **Metadata Sanity Check:** Behavioral metadata feature `FaceSEX` had near-zero permutation importance ($\approx 0.008$), demonstrating that the network does not exploit metadata shortcuts.
+- **Temporal Dynamics ("When"):** Discriminative saliency is late-stage rather than early sensory/perceptual, exhibiting prominent peaks at **$\sim 298\text{ ms}$, $\sim 355\text{ ms}$, and peaking sharply at $\sim 500\text{ ms}$** with sustained activity in the late LPP / P600 window ($530\text{–}600\text{ ms}$).
+- **Spatial Filter Dissociation ("How"):** Contrasting permutation occlusion against gradient saliency distinguishes **bottleneck channels** (PO10, PCA_Frontal, PO9 with modest gradient but indispensable spatial information) from **redundant channels** (AFF3h with high local gradient but redundant spatial encoding).
+
+---
+
 ## Reference Notebook
 
 `notebooks/Neural_classification_artificial_faces.ipynb` is the reference notebook that the
