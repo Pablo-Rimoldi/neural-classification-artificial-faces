@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-def clean_ml_files(source_dir='data\Files for ML', target_dir='data/file_cleaned'):
+def clean_ml_files(source_dir='data/file_raw', target_dir='data/file_cleaned'):
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
         print(f"Cartella creata: {target_dir}")
@@ -14,7 +14,7 @@ def clean_ml_files(source_dir='data\Files for ML', target_dir='data/file_cleaned
         if filename.endswith(".txt"):
             file_path = os.path.join(source_dir, filename)
             try:
-                df = pd.read_csv(file_path, sep='\s+', engine='python')
+                df = pd.read_csv(file_path, sep=r'\s+', engine='python')
                 new_filename = filename.replace('.txt', '.csv')
                 save_path = os.path.join(target_dir, new_filename)
                 df.to_csv(save_path, index=False)            
