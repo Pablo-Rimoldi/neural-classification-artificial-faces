@@ -4,7 +4,8 @@ from src import config
 def test_load_raw_files_shape_and_metadata():
     df = load_raw_files()
     assert {'SubjectID','SubjectSEX','TargetCODE','TargetNATURE','Time_ms'} <= set(df.columns)
-    assert df['SubjectSEX'].dtype == object              # strings, not encoded
+    import pandas as pd
+    assert pd.api.types.is_string_dtype(df['SubjectSEX'])  # strings, not encoded
     assert set(df['TargetNATURE'].unique()) <= {'R','A'}
     assert set(df['SubjectSEX'].unique()) <= {'M','F'}
     # time axis anchored on trigger row
