@@ -14,8 +14,9 @@ PCA_COLUMNS = ['PCA_Frontal', 'PCA_Parietal', 'PCA_Occipital', 'PCA_Temporal']
 # Sampling frequency in Hz
 S_FREQ = 512 
 
-# Statistical threshold for PCA components
-Z_THRESHOLD = 4.0
+# Artifact rejection threshold
+ARTIFACT_THRESHOLD_UV = 80.0
+MAX_BAD_CHANNELS = 2
 
 # ─────────────────────────────────────────────
 # CHECK AMPLITUDE DISTRIBUTION
@@ -100,14 +101,17 @@ def create_lists(data):
         elif cleaned_pca_data.shape[0] < target_epoch_samples:
             continue # Skip this epoch if PCA data is too short after cleaning/truncation
 
-        # Enforce the exclusion of too extreme data based on cleaned PCA components
-        if np.max(np.abs(cleaned_pca_data)) < (np.std(cleaned_pca_data) * Z_THRESHOLD):
-            # List the cleaned data
-            EEG_list.append(cleaned_eeg_data.T)
-            PCA_list.append(cleaned_pca_data.T)
-            y_list.append(group['TargetCODE'].iloc[0])
-            sub_list.append(sub_id)
-            subject_sex_list.append(group['SubjectSEX'].iloc[0])
+        # Artifact rejection based on EEG amplitude
+        channel_max = np.max(np.abs(cleaned_eeg_data), axis=0)
+        if np.sum(channel_max > ARTIFACT_THRESHOLD_UV) > MAX_BAD_CHANNELS:
+            continue
+
+        # List the cleaned data
+        EEG_list.append(cleaned_eeg_data.T)
+        PCA_list.append(cleaned_pca_data.T)
+        y_list.append(group['TargetCODE'].iloc[0])
+        sub_list.append(sub_id)
+        subject_sex_list.append(group['SubjectSEX'].iloc[0])
         
     return EEG_list, PCA_list, y_list, sub_list, subject_sex_list
 
@@ -117,10 +121,6 @@ def create_lists(data):
 # ─────────────────────────────────────────────
 
 def create_tensor(data):
-    x_final = None
-    y_final = None
-    subjects_final = None
-
     combined_X_list = []
 
     EEG_list, PCA_list, y_list, sub_list, subject_sex_list = create_lists(data)
@@ -134,11 +134,11 @@ def create_tensor(data):
         combined_epoch_data = np.vstack((EEG_list[j], PCA_list[j], new_channel_data))
         combined_X_list.append(combined_epoch_data)
 
-    x_final = np.array(combined_X_list) # 3D Tensor (Epochs, Channels, Time)
+    x_final = np.array(combined_X_list, dtype=np.float64) # 3D Tensor (Epochs, Channels, Time)
     y_final = np.array(y_list) # Labels
     subjects_final = np.array(sub_list) # Subject ID
 
-    return x_final, y_final, subject_final
+    return x_final, y_final, subjects_final
 
 # ─────────────────────────────────────────────
 # CHECK FINAL TENSOR
@@ -153,8 +153,11 @@ def check_final_tensor(x, y):
 # SAVE TENSOR
 # Saves the final tensors for features, labels, and subject IDs into a .npz file for later use in model training.
 # ─────────────────────────────────────────────
-def save_tensor(x, y, subjects):
-    np.savez('data/final_tensor.npz', x=x, y=y, subjects=subjects)
+def save_tensor(x, y, subjects, path='data/file_tensor/final_tensor.npz'):
+    import os
+    from pathlib import Path
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    np.savez(path, x=x, y=y, subjects=subjects)
 
 def main():
     # Load preprocessed data
