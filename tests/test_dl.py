@@ -48,11 +48,13 @@ def test_dl_training_smoke(tmp_path, tensor):
     train_one_epoch(m, dl, opt, torch.nn.CrossEntropyLoss(), torch.device('cpu'))
 
 
-def test_xai_shapes(tensor):
+def test_xai_shapes_and_plotting(tmp_path, tensor):
     import numpy as np
     import torch
     from src.models.dl.architecture import SpatialTemporalCNN
-    from src.models.dl.xai import permutation_importance, gradient_saliency, channel_names
+    from src.models.dl.xai import (
+        permutation_importance, gradient_saliency, channel_names, plot_xai,
+    )
 
     X, y, subj = tensor
     Xn = ((X - X.mean((1, 2), keepdims=True)) / (X.std((1, 2), keepdims=True) + 1e-8)).astype('float32')
@@ -63,6 +65,12 @@ def test_xai_shapes(tensor):
     sal, _ = gradient_saliency(models, te, Xn, yb, torch.device('cpu'))
     assert imp.shape == (19,) and len(channel_names()) == 19
     assert sal.shape[0] == 19 and sal.shape[1] == Xn.shape[2]
+
+    # Verify plot_xai produces output artifact without error
+    out_img = tmp_path / 'xai_test.png'
+    plot_xai(imp, std, sal, n_folds=2, save_path=out_img)
+    assert out_img.exists() and out_img.stat().st_size > 0
+
 
 
 @pytest.mark.slow
