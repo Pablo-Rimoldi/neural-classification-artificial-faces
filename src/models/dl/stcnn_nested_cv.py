@@ -131,11 +131,11 @@ def hp_space(trial):
 
 
 hardcoded_hps = [
-    {'temp_filters': 32,  'kernel_size': 16, 'n_layers': 1, 'adj_init': 'identity', 'adj_norm': 'sigmoid', 'dropout': 0.430385, 'lr': 0.000886, 'wd': 9.445e-06, 'scheduler': 'cosine', 'batch_size': 32, 'epochs': 120, 'mixup_alpha': 0.3743},
-    {'temp_filters': 64,  'kernel_size': 16, 'n_layers': 1, 'adj_init': 'random',   'adj_norm': 'softmax', 'dropout': 0.252020, 'lr': 0.000718, 'wd': 7.672e-05, 'scheduler': 'cosine', 'batch_size': 32, 'epochs': 120, 'mixup_alpha': 0.2786},
-    {'temp_filters': 128, 'kernel_size': 4,  'n_layers': 2, 'adj_init': 'uniform',  'adj_norm': 'softmax', 'dropout': 0.349319, 'lr': 0.000134, 'wd': 0.001161,  'scheduler': 'none',   'batch_size': 32, 'epochs': 60,  'mixup_alpha': 0.0630},
-    {'temp_filters': 32,  'kernel_size': 8,  'n_layers': 1, 'adj_init': 'identity', 'adj_norm': 'sigmoid', 'dropout': 0.395922, 'lr': 0.000453, 'wd': 0.000848,  'scheduler': 'none',   'batch_size': 32, 'epochs': 100, 'mixup_alpha': 0.2787},
-    {'temp_filters': 128, 'kernel_size': 32, 'n_layers': 2, 'adj_init': 'random',   'adj_norm': 'softmax', 'dropout': 0.466126, 'lr': 0.000378, 'wd': 0.000111,  'scheduler': 'none',   'batch_size': 32, 'epochs': 120, 'mixup_alpha': 0.2111},
+    {'temp_filters': 16, 'kernel_size': 8, 'n_layers': 1, 'adj_init': 'random', 'adj_norm': 'none', 'dropout': 0.5046571918190736, 'lr': 0.000635896422246323, 'wd': 3.0044116686639446e-06, 'scheduler': 'step', 'batch_size': 32, 'epochs': 120, 'mixup_alpha': 0.3394635362586372},
+    {'temp_filters': 64, 'kernel_size': 4, 'n_layers': 2, 'adj_init': 'uniform', 'adj_norm': 'sigmoid', 'dropout': 0.574093238462129, 'lr': 0.0010808703136853898, 'wd': 0.0016946249349555115, 'scheduler': 'step', 'batch_size': 32, 'epochs': 60, 'mixup_alpha': 0.36393300724250593},
+    {'temp_filters': 128, 'kernel_size': 32, 'n_layers': 1, 'adj_init': 'uniform', 'adj_norm': 'none', 'dropout': 0.43072365380252486, 'lr': 0.00010052406565475403, 'wd': 7.67457142739357e-06, 'scheduler': 'step', 'batch_size': 32, 'epochs': 80, 'mixup_alpha': 0.35229211045320113},
+    {'temp_filters': 32, 'kernel_size': 8, 'n_layers': 2, 'adj_init': 'random', 'adj_norm': 'softmax', 'dropout': 0.5262496137701614, 'lr': 0.003248987393210566, 'wd': 3.2919129849906944e-05, 'scheduler': 'cosine', 'batch_size': 32, 'epochs': 60, 'mixup_alpha': 0.2448754074193164},
+    {'temp_filters': 32, 'kernel_size': 4, 'n_layers': 2, 'adj_init': 'uniform', 'adj_norm': 'sigmoid', 'dropout': 0.3422047446607334, 'lr': 0.0007310057721514055, 'wd': 0.00026089115991403613, 'scheduler': 'cosine', 'batch_size': 16, 'epochs': 120, 'mixup_alpha': 0.3490575859172018}
 ]
 
 # ── Run ───────────────────────────────────────────────────────────────────
